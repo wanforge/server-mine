@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2086
 #
-# secure-ssh.sh — harden SSH: change port (default 20829), disable root login,
+# secure-ssh.sh — harden SSH: change port (default 22), disable root login,
 # optionally disable password auth, enable pubkey auth. Opens the new port in
 # the firewall BEFORE restarting sshd to avoid lockout.
 #
@@ -13,7 +13,7 @@
 #
 set -euo pipefail
 TASK="secure-ssh"
-DEFAULT_PORT="20829"
+DEFAULT_PORT="22"
 
 # ---- common preamble ----------------------------------------------------
 if [ -t 2 ] && [ -z "${NO_COLOR:-}" ]; then

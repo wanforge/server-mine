@@ -137,8 +137,8 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/se
 
 ### secure-ssh.sh
 
-- Changes the SSH port (default `20829`), disables root login, optionally
-  disables password auth, enables pubkey auth.
+- Changes the SSH port (default `22` — keep it or set a custom one), disables
+  root login, optionally disables password auth, enables pubkey auth.
 - Uses a drop-in file under `sshd_config.d/` when `Include` is active, otherwise
   edits the main config. Backs up `sshd_config` first.
 - **Anti-lockout**: opens the new port in `ufw` before restarting, validates with
