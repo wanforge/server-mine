@@ -39,7 +39,7 @@ REPO_BRANCH="main"
 
 # Script registry — "group|label|path-in-repo|description". Keep groups contiguous.
 SCRIPTS=(
-  "System|install-packages|script/install-packages.sh|Update system + install base packages (multi-distro)"
+  "System|install-packages|script/install-packages.sh|Update system + install base essentials (micro, curl, wget, git)"
   "System|set-timezone|script/set-timezone.sh|Set timezone (default Asia/Jakarta)"
   "Security|install-firewall|script/install-firewall.sh|Install & configure ufw firewall"
   "Security|firewall-manager|script/firewall-manager.sh|Full ufw manager: allow/deny IP/port, multiple, rate-limit"
@@ -53,6 +53,7 @@ SCRIPTS=(
   "Database|enable-mysql-remote|script/enable-mysql-remote.sh|Allow remote MySQL/MariaDB access (sensitive)"
   "Database|database-toolkit|script/database-toolkit.sh|Monitor, optimize, config, datetime (MySQL/PostgreSQL)"
   "App Runtime|install-nodejs|script/install-nodejs.sh|Install Node.js via nvm (user-local) + PM2"
+  "App Runtime|install-python|script/install-python.sh|Install Python 3 + pip, venv, dev, pipx (multi-distro)"
   "App Runtime|install-composer|script/install-composer.sh|Install Composer (user-local, signature-verified)"
   "App Runtime|setup-pm2-app|script/setup-pm2-app.sh|Configure pm2-logrotate + register an app (ecosystem)"
   "Monitoring|monitor-system|script/monitor-system.sh|CPU, RAM, storage, processes, network (snapshot or realtime)"

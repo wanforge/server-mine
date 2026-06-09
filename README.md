@@ -69,7 +69,7 @@ public repository.
 Select scripts to run:  ↑/↓ move · SPACE toggle · A all · ENTER run · Q quit
 
 ── System ──
-❯ [ ] install-packages     Update system + install base packages (multi-distro)
+❯ [ ] install-packages     Update system + base essentials (micro, curl, wget, git)
   [ ] set-timezone         Set timezone (default Asia/Jakarta)
 ── Security ──
   [ ] install-firewall     Install & configure ufw firewall
@@ -87,6 +87,7 @@ Select scripts to run:  ↑/↓ move · SPACE toggle · A all · ENTER run · Q 
   [ ] database-toolkit     Monitor, optimize, config, datetime (MySQL/PostgreSQL)
 ── App Runtime ──
   [ ] install-nodejs       Install Node.js via nvm (user-local) + PM2
+  [ ] install-python       Install Python 3 + pip, venv, dev, pipx
   [ ] install-composer     Install Composer (user-local, signature-verified)
   [ ] setup-pm2-app        Configure pm2-logrotate + register an app (ecosystem)
 ── Monitoring ──
@@ -212,6 +213,7 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/in
 
 # App runtime
 curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-nodejs.sh | bash
+curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-python.sh | bash
 curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-composer.sh | bash
 curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/setup-pm2-app.sh | bash
 ```
@@ -221,7 +223,7 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/se
 | Group           | Script                   | Purpose                                                           | Sudo | Distro          |
 | --------------- | ------------------------ | ----------------------------------------------------------------- | ---- | --------------- |
 | —               | `install.sh`             | Grouped checkbox launcher that runs the other scripts             | —    | Any             |
-| System          | `install-packages.sh`    | Update/upgrade system, install base packages                      | Yes  | Multi           |
+| System          | `install-packages.sh`    | Update/upgrade system, install base essentials (micro/curl/wget/git) | Yes | Multi        |
 | System          | `set-timezone.sh`        | Set timezone via `timedatectl` (default `Asia/Jakarta`)           | Yes  | Any (systemd)   |
 | Security        | `install-firewall.sh`    | Install `ufw`, open SSH/http/https, add custom ports, enable      | Yes  | Mainly Deb/Ubu  |
 | Security        | `firewall-manager.sh`    | Full ufw manager: allow/deny IP & port, multi-IP, rate-limit      | Yes  | Any (ufw)       |
@@ -235,6 +237,7 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/se
 | Database        | `enable-mysql-remote.sh` | Remote MySQL/MariaDB: bind-address, firewall, create users        | Yes  | Debian/Ubuntu   |
 | Database        | `database-toolkit.sh`    | Monitor / optimize / config / datetime — MySQL & PostgreSQL       | Yes  | Any (DB client) |
 | App Runtime     | `install-nodejs.sh`      | Install Node.js via nvm (user-local), choose version, PM2         | No   | Any             |
+| App Runtime     | `install-python.sh`      | Python 3 + pip, venv/virtualenv, dev headers, pipx (multi-distro) | Yes  | Multi           |
 | App Runtime     | `install-composer.sh`    | Install Composer to `~/.local/bin`, verify signature              | No   | Any (needs PHP) |
 | App Runtime     | `setup-pm2-app.sh`       | Configure pm2-logrotate + register an app (ecosystem.config.js)   | No   | Any             |
 | Monitoring      | `monitor-system.sh`      | CPU/RAM/storage/processes/network — snapshot or realtime watch    | Some | Any             |
@@ -250,10 +253,16 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/se
 
 - Detects the package manager: `apt`, `dnf`, `yum`, `pacman`, `zypper`, `apk`.
 - **Grouped checkbox menu** (default all on, uncheck to skip): System actions
-  (update / upgrade / cleanup) plus per-package selection grouped by Editor,
-  Network, VCS, Diagnostics, and Python — each with a description.
-- Package names are resolved per distro; falls back to `pip3` for
-  `speedtest-cli` where the repo package is missing.
+  (update / upgrade / cleanup) plus base essentials — `micro`, `curl`, `wget`,
+  `git`. Package names are resolved per distro.
+- Python lives in `install-python.sh`; `speedtest-cli` is in `net-tools.sh`.
+
+### install-python.sh
+
+- Multi-distro. Checkbox: Python 3 interpreter, `pip`, `venv`/virtualenv, dev
+  headers (build C extensions), and `pipx` (install Python CLI apps isolated).
+- Resolves package names per distro; `pipx` falls back to `pip --user` where the
+  repo has no package, then runs `pipx ensurepath`.
 
 ### set-timezone.sh
 
