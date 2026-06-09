@@ -153,6 +153,12 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/se
   - **Apps & rules**: list/allow application profiles, delete a rule by number.
 - Addresses are validated; multiple-IP actions report applied/skipped counts.
 - Warns to allow your SSH port before enabling, to avoid lockout.
+- **Dry-run**: set `DRY_RUN=1` to print every `ufw` command without executing —
+  safe to try the menus and inputs first:
+
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/firewall-manager.sh | DRY_RUN=1 bash
+  ```
 
 ### install-fail2ban.sh
 

@@ -7,6 +7,8 @@
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/firewall-manager.sh | bash
+#   # dry-run (print ufw commands, change nothing):
+#   curl -fsSL .../script/firewall-manager.sh | DRY_RUN=1 bash
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (c) 2026 Sugeng Sulistiyawan
@@ -20,8 +22,20 @@ __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 if [ -r "${__d}/lib.sh" ]; then . "${__d}/lib.sh"
 else . <(curl -fsSL "${__LIB}"); fi
 
+# ---- dry-run ------------------------------------------------------------
+# Enable with: DRY_RUN=1 ... | bash   OR   ... | bash -s -- --dry-run
+DRY_RUN="${DRY_RUN:-0}"
+for __a in "$@"; do case "$__a" in --dry-run|-n) DRY_RUN=1 ;; esac; done
+
 # ---- helpers ------------------------------------------------------------
-uw() { printf "\n%b▶ ufw %s%b\n" "${C_BOLD}${C_CYAN}" "$*" "${C_RESET}" >&2; if ${SUDO} ufw "$@"; then ok "Done."; else err "ufw command failed."; fi; }
+ufw_run() {
+  if [ "${DRY_RUN}" = "1" ]; then
+    printf "    %b[dry-run]%b ufw %s\n" "${C_YELLOW}" "${C_RESET}" "$*" >&2
+    return 0
+  fi
+  ${SUDO} ufw "$@"
+}
+uw() { printf "\n%b▶ ufw %s%b\n" "${C_BOLD}${C_CYAN}" "$*" "${C_RESET}" >&2; if ufw_run "$@"; then ok "Done."; else err "ufw command failed."; fi; }
 valid_addr() { [[ "$1" =~ ^[0-9a-fA-F:.]+(/[0-9]{1,3})?$ ]]; }
 valid_proto() { case "$1" in tcp|udp|"") return 0;; *) return 1;; esac; }
 ask_proto() { local p; p="$(ask "Protocol [tcp/udp/any]:" "any")"; case "$p" in tcp|udp) echo "$p";; *) echo "";; esac; }
@@ -33,17 +47,17 @@ apply_addr_rule() {
   for a in ${list//,/ }; do
     if ! valid_addr "$a"; then warn "Skip invalid address: $a"; bad_n=$((bad_n+1)); continue; fi
     if [ -n "$port" ]; then
-      if [ -n "$proto" ]; then ${SUDO} ufw "$action" from "$a" to any port "$port" proto "$proto"
-      else ${SUDO} ufw "$action" from "$a" to any port "$port"; fi
+      if [ -n "$proto" ]; then ufw_run "$action" from "$a" to any port "$port" proto "$proto"
+      else ufw_run "$action" from "$a" to any port "$port"; fi
     else
-      ${SUDO} ufw "$action" from "$a"
+      ufw_run "$action" from "$a"
     fi && ok_n=$((ok_n+1)) || bad_n=$((bad_n+1))
   done
   ok "${action}: ${ok_n} applied, ${bad_n} skipped/failed."
 }
 
 # ---- actions ------------------------------------------------------------
-a_status()   { hd "Status (verbose)"; ${SUDO} ufw status verbose >&2 || true; hd "Numbered rules"; ${SUDO} ufw status numbered >&2 || true; }
+a_status()   { hd "Status (verbose)"; ufw_run status verbose >&2 || true; hd "Numbered rules"; ufw_run status numbered >&2 || true; }
 a_enable()   { uw --force enable; }
 a_disable()  { local c; c="$(ask "Disable the firewall? [y/N]:" "n")"; [[ "$c" =~ ^(y|Y|yes)$ ]] && uw disable || info "Kept enabled."; }
 a_reload()   { uw reload; }
@@ -68,16 +82,16 @@ a_allow_ip_port() { local ip p pr; ip="$(ask "Allow from IP/CIDR:" "")"; req_non
 a_deny_ip_port()  { local ip p pr; ip="$(ask "Deny from IP/CIDR:" "")"; req_nonempty "$ip" || return; p="$(ask "To port:" "")"; req_nonempty "$p" || return; pr="$(ask_proto)"; apply_addr_rule deny "$ip" "$p" "$pr"; }
 
 a_apps() {
-  hd "Application profiles"; ${SUDO} ufw app list >&2 || true
+  hd "Application profiles"; ufw_run app list >&2 || true
   local app; app="$(ask "Allow which app profile? (Enter to skip):" "")"
   [ -n "$app" ] && uw allow "$app" || info "Skipped."
 }
 a_delete() {
-  hd "Numbered rules"; ${SUDO} ufw status numbered >&2 || true
+  hd "Numbered rules"; ufw_run status numbered >&2 || true
   local n; n="$(ask "Rule number to delete (Enter to skip):" "")"
   [ -z "$n" ] && { info "Skipped."; return; }
   [[ "$n" =~ ^[0-9]+$ ]] || { err "Invalid number."; return; }
-  ${SUDO} ufw --force delete "$n" >&2 && ok "Deleted rule ${n}." || err "Delete failed."
+  ufw_run --force delete "$n" >&2 && ok "Deleted rule ${n}." || err "Delete failed."
 }
 
 req_nonempty() { [ -n "$1" ] || { err "Value required."; return 1; }; }
@@ -97,7 +111,8 @@ menu() {
 
 # ---- run ----------------------------------------------------------------
 banner
-if ! command -v ufw >/dev/null 2>&1; then
+[ "${DRY_RUN}" = "1" ] && warn "DRY-RUN mode: ufw commands are printed, not executed."
+if [ "${DRY_RUN}" != "1" ] && ! command -v ufw >/dev/null 2>&1; then
   c="$(ask "ufw not installed. Install it now? [Y/n]:" "y")"
   case "$c" in n|N|no) err "ufw required."; exit 1 ;; *)
     if command -v apt-get >/dev/null 2>&1; then ${SUDO} apt-get update && ${SUDO} apt-get install -y ufw
