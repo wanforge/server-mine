@@ -62,6 +62,30 @@ Select scripts to run:  ↑/↓ move · SPACE toggle · A all · ENTER run · Q 
   [ ] monitor-system       CPU, RAM, storage, processes, network snapshot
 ```
 
+## Output Modes
+
+Every script shares one verbosity control (defined in `lib.sh`). Set it with an
+environment variable (recommended — it also propagates through the launcher) or
+a flag:
+
+| Mode      | Shows                                   | How                                   |
+| --------- | --------------------------------------- | ------------------------------------- |
+| `silent`  | Errors and final result only, no banner | `MODE=silent` · `QUIET=1` · `-q`      |
+| `normal`  | Banner + info/ok/warn/err (default)     | `MODE=normal` (default)               |
+| `verbose` | Normal + extra `dbg` detail             | `MODE=verbose` · `VERBOSE=1` · `-v`   |
+| `debug`   | Verbose + shell trace (`set -x`)        | `MODE=debug` · `DEBUG=1` · `--debug`  |
+
+```bash
+# silent (good for automation / cron)
+curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/install.sh | MODE=silent bash
+
+# verbose
+curl -fsSL .../script/monitor-system.sh | VERBOSE=1 bash
+```
+
+`firewall-manager.sh` also supports `DRY_RUN=1` to print `ufw` commands without
+executing them. `NO_COLOR=1` disables colors in any mode.
+
 ## Run a Single Script
 
 Each script can also be run directly without the launcher.

@@ -19,8 +19,31 @@ else
   C_RESET=""; C_BOLD=""; C_DIM=""; C_RED=""; C_GREEN=""; C_YELLOW=""; C_CYAN=""; USE_COLOR=0
 fi
 
+# ---- verbosity / mode ---------------------------------------------------
+# Levels: 0 silent (errors + result only, no banner), 1 normal (default),
+# 2 verbose (+ dbg + extra detail), 3 debug (verbose + shell trace).
+# Set via:  MODE=silent|normal|verbose|debug
+#       or  QUIET=1 / VERBOSE=1 / DEBUG=1
+#       or  flags  -q|--silent  -v|--verbose  --debug
+case "${MODE:-}" in
+  silent|quiet) LOG_LEVEL=0 ;; normal) LOG_LEVEL=1 ;;
+  verbose)      LOG_LEVEL=2 ;; debug)  LOG_LEVEL=3 ;;
+  *)
+    LOG_LEVEL=1
+    [ "${QUIET:-0}"   = "1" ] && LOG_LEVEL=0
+    [ "${VERBOSE:-0}" = "1" ] && LOG_LEVEL=2
+    [ "${DEBUG:-0}"   = "1" ] && LOG_LEVEL=3 ;;
+esac
+for __a in "$@"; do case "$__a" in
+  -q|--silent|--quiet) LOG_LEVEL=0 ;;
+  -v|--verbose)        LOG_LEVEL=2 ;;
+  --debug)             LOG_LEVEL=3 ;;
+esac; done
+[ "${LOG_LEVEL}" -ge 3 ] && set -x
+
 # ---- banner (random single-hue gradient) --------------------------------
 banner() {
+  [ "${LOG_LEVEL:-1}" -ge 1 ] || return 0
   local lines=(
 '██╗    ██╗ █████╗ ███╗   ██╗███████╗ ██████╗ ██████╗  ██████╗ ███████╗'
 '██║    ██║██╔══██╗████╗  ██║██╔════╝██╔═══██╗██╔══██╗██╔════╝ ██╔════╝'
@@ -42,12 +65,13 @@ banner() {
     "${C_DIM}" "${TASK:+ · ${TASK}}" "${C_RESET}" >&2
 }
 
-# ---- logging ------------------------------------------------------------
-hd()   { printf "\n%b▸ %s%b\n" "${C_BOLD}${C_CYAN}" "$1" "${C_RESET}" >&2; }
-info() { printf "    %b•%b %s\n" "${C_DIM}" "${C_RESET}" "$1" >&2; }
-ok()   { printf "    %b✔%b %s\n" "${C_GREEN}" "${C_RESET}" "$1" >&2; }
-warn() { printf "    %b!%b %s\n" "${C_YELLOW}" "${C_RESET}" "$1" >&2; }
+# ---- logging (gated by LOG_LEVEL; err always prints) --------------------
+hd()   { [ "${LOG_LEVEL:-1}" -ge 1 ] || return 0; printf "\n%b▸ %s%b\n" "${C_BOLD}${C_CYAN}" "$1" "${C_RESET}" >&2; }
+info() { [ "${LOG_LEVEL:-1}" -ge 1 ] || return 0; printf "    %b•%b %s\n" "${C_DIM}" "${C_RESET}" "$1" >&2; }
+ok()   { [ "${LOG_LEVEL:-1}" -ge 1 ] || return 0; printf "    %b✔%b %s\n" "${C_GREEN}" "${C_RESET}" "$1" >&2; }
+warn() { [ "${LOG_LEVEL:-1}" -ge 1 ] || return 0; printf "    %b!%b %s\n" "${C_YELLOW}" "${C_RESET}" "$1" >&2; }
 err()  { printf "    %b✖%b %s\n" "${C_RED}" "${C_RESET}" "$1" >&2; }
+dbg()  { [ "${LOG_LEVEL:-1}" -ge 2 ] || return 0; printf "    %b⋯%b %s\n" "${C_DIM}" "${C_RESET}" "$1" >&2; }
 
 # ---- prompts (read from the terminal even under `curl | bash`) -----------
 # Open the terminal on FD 3; fall back to stdin if /dev/tty is not available.
