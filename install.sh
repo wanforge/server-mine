@@ -126,6 +126,7 @@ checkbox_menu() {
     esac
   done
 
+  SELECTED=()   # reset each call — otherwise selections accumulate across the loop
   for ((i = 0; i < n; i++)); do [ "${checked[i]}" -eq 1 ] && SELECTED+=("$i"); done
   return 0
 }
