@@ -90,13 +90,21 @@ INTERVAL="${INTERVAL:-2}"
 if [ "${WATCH}" = "1" ]; then
   IV="$(ask "Refresh interval (seconds):" "${INTERVAL}")"; [[ "${IV}" =~ ^[0-9]+$ ]] && INTERVAL="${IV}"
   has_key bigdirs && warn "bigdirs is skipped in watch mode (run a one-shot snapshot for it)."
-  trap 'printf "\n"; exit 0' INT
+  # in-place refresh: home cursor + overwrite each line (clear-to-EOL), no
+  # full-screen clear → values update in place without flicker / "reload".
+  printf '\033[2J\033[?25l' >&2                       # clear once, hide cursor
+  trap 'printf "\033[?25h\n" >&2; exit 0' INT
+  trap 'printf "\033[?25h" >&2' EXIT
   while true; do
-    printf '\033[H\033[2J' >&2
-    printf "%bwanforge.asia · monitor%b  %b%s%b  %brefresh %ss · Ctrl-C to stop%b\n" \
-      "${C_BOLD}${C_CYAN}" "${C_RESET}" "${C_GREEN}" "$(date '+%Y-%m-%d %H:%M:%S' 2>/dev/null)" "${C_RESET}" \
-      "${C_DIM}" "${INTERVAL}" "${C_RESET}" >&2
-    render
+    FRAME="$( {
+      printf "%bwanforge.asia · monitor%b  %b%s%b  %brefresh %ss · Ctrl-C to stop%b\n" \
+        "${C_BOLD}${C_CYAN}" "${C_RESET}" "${C_GREEN}" "$(date '+%Y-%m-%d %H:%M:%S' 2>/dev/null)" "${C_RESET}" \
+        "${C_DIM}" "${INTERVAL}" "${C_RESET}"
+      render
+    } 2>&1 )"
+    printf '\033[H' >&2                                # cursor home (no clear)
+    while IFS= read -r __ln; do printf '%s\033[K\n' "${__ln}" >&2; done <<< "${FRAME}"
+    printf '\033[J' >&2                                # wipe any leftover lines below
     sleep "${INTERVAL}"
   done
 fi

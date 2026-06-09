@@ -335,6 +335,8 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/se
 - **Realtime / watch mode**: refreshes the selected sections on an interval until
   `Ctrl-C`. Enable with the prompt, `WATCH=1`, or `-w`/`--watch`; set the cadence
   with `INTERVAL=<seconds>` (default 2). `bigdirs` is skipped while watching.
+  Updates happen **in place** — the cursor homes and overwrites each line (no
+  full-screen clear), so the values refresh without flicker or a "page reload".
 
   ```bash
   curl -fsSL .../script/monitor-system.sh | WATCH=1 INTERVAL=2 bash
