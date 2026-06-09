@@ -17,7 +17,7 @@ set -euo pipefail
 __LIB="https://raw.githubusercontent.com/wanforge/server-mine/main/script/lib.sh"
 __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 if [ -r "${__d}/script/lib.sh" ]; then . "${__d}/script/lib.sh"
-else . <(curl -fsSL "${__LIB}"); fi
+else if command -v curl >/dev/null 2>&1; then . <(curl -fsSL "${__LIB}"); else . <(wget -qO- "${__LIB}"); fi; fi
 
 spinner() {
   # spinner PID "message"
@@ -147,7 +147,7 @@ for sel in "${SELECTED[@]}"; do
   IFS='|' read -r _ SEL_LABEL SCRIPT_PATH _ <<< "${SCRIPTS[$sel]}"
   RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/${SCRIPT_PATH}"
 
-  curl -fsSL "${RAW_URL}" -o "${TMP_SCRIPT}" &
+  dlo "${RAW_URL}" "${TMP_SCRIPT}" &
   spinner $! "Fetching ${SEL_LABEL}"
   wait $! || { echo "Download failed: ${SCRIPT_PATH} (check repo / network)." >&2; exit 1; }
 

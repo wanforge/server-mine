@@ -20,7 +20,7 @@ TASK="firewall-manager"
 __LIB="https://raw.githubusercontent.com/wanforge/server-mine/main/script/lib.sh"
 __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 if [ -r "${__d}/lib.sh" ]; then . "${__d}/lib.sh"
-else . <(curl -fsSL "${__LIB}"); fi
+else if command -v curl >/dev/null 2>&1; then . <(curl -fsSL "${__LIB}"); else . <(wget -qO- "${__LIB}"); fi; fi
 
 # ---- helpers ------------------------------------------------------------
 # DRY_RUN + run() come from lib.sh (global to all scripts).

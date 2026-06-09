@@ -54,6 +54,10 @@ run() {
   "$@"
 }
 
+# ---- download helper (works with curl OR wget) --------------------------
+dl()  { if command -v curl >/dev/null 2>&1; then curl -fsSL "$1"; else wget -qO- "$1"; fi; }       # to stdout
+dlo() { if command -v curl >/dev/null 2>&1; then curl -fsSL "$1" -o "$2"; else wget -qO "$2" "$1"; fi; }  # to file $2
+
 # ---- assume-yes ---------------------------------------------------------
 # ASSUME_YES=1 (or YES=1, or -y/--yes) makes ask() return the default answer
 # without prompting — for non-interactive / automated runs.

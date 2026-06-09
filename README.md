@@ -14,10 +14,41 @@ This is a public repository, so no authentication is required to run the scripts
   user-local and do not use `sudo`.
 - An interactive terminal (scripts read input from `/dev/tty`).
 
+### Install `curl` first (fresh systems)
+
+A minimal install may not ship `curl`. Install it for your distro:
+
+```bash
+# Debian / Ubuntu
+sudo apt update && sudo apt install -y curl
+
+# Fedora / RHEL / CentOS / Rocky / Alma
+sudo dnf install -y curl          # or: sudo yum install -y curl
+
+# Arch / Manjaro
+sudo pacman -Sy --noconfirm curl
+
+# openSUSE
+sudo zypper install -y curl
+
+# Alpine
+sudo apk add curl
+```
+
+If you are `root` (e.g. a fresh container/VM), drop the `sudo`. No package
+manager handy? `curl` usually rides along with `wget` — see the wget alternative
+below.
+
 ## Run via the Launcher
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/install.sh | bash
+```
+
+No `curl`? Use `wget` instead (present on many minimal images):
+
+```bash
+wget -qO- https://raw.githubusercontent.com/wanforge/server-mine/main/install.sh | bash
 ```
 
 Menu controls:
