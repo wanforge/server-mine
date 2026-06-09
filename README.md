@@ -83,8 +83,25 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/install.s
 curl -fsSL .../script/monitor-system.sh | VERBOSE=1 bash
 ```
 
-`firewall-manager.sh` also supports `DRY_RUN=1` to print `ufw` commands without
-executing them. `NO_COLOR=1` disables colors in any mode.
+### Dry-run (all scripts)
+
+`DRY_RUN=1` (or `--dry-run` / `-n`) makes every script **print** the
+state-changing commands instead of running them — defined once in `lib.sh`, so
+it works the same everywhere:
+
+```bash
+curl -fsSL .../script/install-fail2ban.sh | DRY_RUN=1 bash
+# →  [dry-run] sudo apt-get install -y fail2ban
+#    [dry-run] sudo systemctl start fail2ban
+```
+
+Dry-run covers system mutations: package managers (install/upgrade/remove),
+services (`systemctl`/`rc-service`), `ufw`, `sed -i`, `tee` config writes,
+`timedatectl`, file ops, and PostgreSQL `VACUUM`/`REINDEX`. Read-only commands
+still run so you see real state. A few user-local installs (nvm/Node, Composer,
+PM2) and MySQL client mutations execute as normal.
+
+`NO_COLOR=1` disables colors in any mode.
 
 ## Run a Single Script
 

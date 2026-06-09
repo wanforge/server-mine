@@ -29,9 +29,9 @@ DROPIN="${DROPIN_DIR}/99-wanforge-hardening.conf"
 set_opt() {
   local key="$1" val="$2" file="$3"
   if ${SUDO} grep -qE "^[#[:space:]]*${key}\b" "${file}" 2>/dev/null; then
-    ${SUDO} sed -i "s|^[#[:space:]]*${key}\b.*|${key} ${val}|" "${file}"
+    run ${SUDO} sed -i "s|^[#[:space:]]*${key}\b.*|${key} ${val}|" "${file}"
   else
-    echo "${key} ${val}" | ${SUDO} tee -a "${file}" >/dev/null
+    echo "${key} ${val}" | run ${SUDO} tee -a "${file}" >/dev/null
   fi
 }
 
@@ -68,9 +68,9 @@ fi
 
 # choose target file: drop-in if Include is active, else the main config
 if ${SUDO} grep -qE '^\s*Include\s+/etc/ssh/sshd_config\.d/\*\.conf' "${SSHD_MAIN}"; then
-  ${SUDO} mkdir -p "${DROPIN_DIR}"
+  run ${SUDO} mkdir -p "${DROPIN_DIR}"
   TARGET="${DROPIN}"
-  ${SUDO} touch "${TARGET}"
+  run ${SUDO} touch "${TARGET}"
   info "Using drop-in: ${TARGET}"
 else
   TARGET="${SSHD_MAIN}"
@@ -79,7 +79,7 @@ fi
 
 # backup
 BACKUP="${SSHD_MAIN}.bak.$(date +%s 2>/dev/null || echo bak)"
-${SUDO} cp "${SSHD_MAIN}" "${BACKUP}"
+run ${SUDO} cp "${SSHD_MAIN}" "${BACKUP}"
 [ "${TARGET}" != "${SSHD_MAIN}" ] && ${SUDO} cp "${TARGET}" "${TARGET}.bak" 2>/dev/null || true
 info "Backup: ${BACKUP}"
 
@@ -101,7 +101,7 @@ fi
 # validate config before restarting
 if ! ${SUDO} sshd -t; then
   err "sshd config test FAILED. Restoring backup; NOT restarting."
-  ${SUDO} cp "${BACKUP}" "${SSHD_MAIN}"
+  run ${SUDO} cp "${BACKUP}" "${SSHD_MAIN}"
   [ "${TARGET}" != "${SSHD_MAIN}" ] && ${SUDO} rm -f "${TARGET}"
   exit 1
 fi
@@ -110,10 +110,10 @@ ok "sshd -t passed."
 RESTART="$(ask "Restart SSH now to apply port ${PORT}? [y/N]:" "n")"
 case "${RESTART}" in
   y|Y|yes)
-    ${SUDO} systemctl restart ssh 2>/dev/null || ${SUDO} systemctl restart sshd 2>/dev/null || warn "Could not restart ssh; restart manually."
+    run ${SUDO} systemctl restart ssh 2>/dev/null || run ${SUDO} systemctl restart sshd 2>/dev/null || warn "Could not restart ssh; restart manually."
     ok "SSH restarted on port ${PORT}."
     ;;
-  *) info "Not restarted. Apply later with: ${SUDO} systemctl restart ssh" ;;
+  *) info "Not restarted. Apply later with: run ${SUDO} systemctl restart ssh" ;;
 esac
 
 # optionally remove the old port 22 rule (ask, default keep to avoid lockout)

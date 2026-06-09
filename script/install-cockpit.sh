@@ -20,7 +20,7 @@ __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 if [ -r "${__d}/lib.sh" ]; then . "${__d}/lib.sh"
 else . <(curl -fsSL "${__LIB}"); fi
 
-svc_enable_start() { local s="$1"; ${SUDO} systemctl enable "$s" >/dev/null 2>&1 || true; ${SUDO} systemctl start "$s" || true; }
+svc_enable_start() { local s="$1"; run ${SUDO} systemctl enable "$s" >/dev/null 2>&1 || true; run ${SUDO} systemctl start "$s" || true; }
 
 # ---- menu ---------------------------------------------------------------
 MENU=(
@@ -43,11 +43,11 @@ if ! command -v apt-get >/dev/null 2>&1; then err "This script targets Debian/Ub
 checkbox "Select Cockpit actions:" || { warn "Cancelled."; exit 0; }
 [ "${#CHOSEN_KEYS[@]}" -eq 0 ] && { warn "Nothing selected."; exit 0; }
 
-${SUDO} apt-get update
+run ${SUDO} apt-get update
 
 # core
 if has_key cockpit; then
-  info "Installing Cockpit..."; ${SUDO} apt-get install -y cockpit; svc_enable_start cockpit; ok "Cockpit running."
+  info "Installing Cockpit..."; run ${SUDO} apt-get install -y cockpit; svc_enable_start cockpit; ok "Cockpit running."
 fi
 
 # reverse-proxy config
@@ -56,10 +56,10 @@ if has_key cockpit-conf; then
   ORIGIN="${ORIGIN#http://}"; ORIGIN="${ORIGIN#https://}"
   if [ -n "${ORIGIN}" ]; then
     warn "AllowUnencrypted=true is only safe behind a TLS-terminating proxy."
-    ${SUDO} mkdir -p /etc/cockpit
+    run ${SUDO} mkdir -p /etc/cockpit
     printf '[WebService]\nAllowOrigins = %s\nProtocolHeader = X-Forwarded-Proto\nAllowUnencrypted = true\n' "${ORIGIN}" \
-      | ${SUDO} tee /etc/cockpit/cockpit.conf >/dev/null
-    ${SUDO} systemctl restart cockpit || true
+      | run ${SUDO} tee /etc/cockpit/cockpit.conf >/dev/null
+    run ${SUDO} systemctl restart cockpit || true
     ok "Wrote /etc/cockpit/cockpit.conf (origin: ${ORIGIN})."
   else
     info "No origin given; skipped cockpit.conf."
@@ -77,16 +77,16 @@ if has_key networkmanager; then
   warn "Changing the netplan renderer can drop your SSH connection. A backup is made."
   CONF="$(ask "Proceed with NetworkManager renderer? type 'yes' to confirm:" "no")"
   if [ "${CONF}" = "yes" ]; then
-    ${SUDO} apt-get install -y network-manager
+    run ${SUDO} apt-get install -y network-manager
     NP="$(ls /etc/netplan/*.yaml 2>/dev/null | head -1 || true)"
     if [ -n "${NP}" ]; then
-      ${SUDO} cp "${NP}" "${NP}.bak.$(date +%s 2>/dev/null || echo bak)" 2>/dev/null || true
+      run ${SUDO} cp "${NP}" "${NP}.bak.$(date +%s 2>/dev/null || echo bak)" 2>/dev/null || true
       if ${SUDO} grep -qE '^\s*renderer:' "${NP}"; then
-        ${SUDO} sed -i 's|^\s*renderer:.*|  renderer: NetworkManager|' "${NP}"
+        run ${SUDO} sed -i 's|^\s*renderer:.*|  renderer: NetworkManager|' "${NP}"
       else
-        ${SUDO} sed -i 's|^\(network:\)|\1\n  renderer: NetworkManager|' "${NP}"
+        run ${SUDO} sed -i 's|^\(network:\)|\1\n  renderer: NetworkManager|' "${NP}"
       fi
-      ${SUDO} netplan generate && ${SUDO} netplan apply || warn "netplan apply failed; check ${NP}.bak"
+      run ${SUDO} netplan generate && ${SUDO} netplan apply || warn "netplan apply failed; check ${NP}.bak"
       svc_enable_start NetworkManager
       ok "NetworkManager renderer applied (backup: ${NP}.bak.*)."
     else
@@ -104,12 +104,12 @@ for p in cockpit-networkmanager cockpit-storaged cockpit-sosreport cockpit-pcp c
 done
 if [ -n "${PLUGINS# }" ]; then
   info "Installing plugins:${PLUGINS}"
-  ${SUDO} apt-get install -y ${PLUGINS} || warn "Some plugins unavailable on this release."
+  run ${SUDO} apt-get install -y ${PLUGINS} || warn "Some plugins unavailable on this release."
 fi
 
 # PCP services
 if has_key pmcd-pmlogger; then
-  ${SUDO} systemctl enable --now pmcd pmlogger 2>/dev/null && ok "pmcd/pmlogger enabled." || warn "Could not enable pmcd/pmlogger."
+  run ${SUDO} systemctl enable --now pmcd pmlogger 2>/dev/null && ok "pmcd/pmlogger enabled." || warn "Could not enable pmcd/pmlogger."
 fi
 
 printf "\n%b✔ Cockpit setup done.%b  %bhttp://127.0.0.1:9090%b\n\n" "${C_BOLD}${C_GREEN}" "${C_RESET}" "${C_DIM}" "${C_RESET}" >&2

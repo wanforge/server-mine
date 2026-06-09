@@ -28,27 +28,27 @@ if ! command -v apt-get >/dev/null 2>&1; then err "This script targets Debian/Ub
 # Add the official PostgreSQL APT repository (PGDG) to get the latest version.
 add_pgdg_repo() {
   info "Configuring PGDG repository for the latest PostgreSQL..."
-  ${SUDO} apt-get install -y curl ca-certificates gnupg
-  ${SUDO} install -d /usr/share/postgresql-common/pgdg
+  run ${SUDO} apt-get install -y curl ca-certificates gnupg
+  run ${SUDO} install -d /usr/share/postgresql-common/pgdg
   ${SUDO} curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
     https://www.postgresql.org/media/keys/ACCC4CF8.asc
   # shellcheck disable=SC1091
   . /etc/os-release
   echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" \
-    | ${SUDO} tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+    | run ${SUDO} tee /etc/apt/sources.list.d/pgdg.list >/dev/null
 }
 
 info "Installing the latest PostgreSQL..."
 if add_pgdg_repo; then
-  ${SUDO} apt-get update
+  run ${SUDO} apt-get update
 else
   warn "PGDG repo setup failed; falling back to the distro package."
-  ${SUDO} apt-get update
+  run ${SUDO} apt-get update
 fi
 # 'postgresql' meta-package pulls the newest available major version.
-${SUDO} apt-get install -y postgresql postgresql-contrib
-${SUDO} systemctl enable postgresql >/dev/null 2>&1 || true
-${SUDO} systemctl start postgresql || true
+run ${SUDO} apt-get install -y postgresql postgresql-contrib
+run ${SUDO} systemctl enable postgresql >/dev/null 2>&1 || true
+run ${SUDO} systemctl start postgresql || true
 PG_VER="$(${SUDO} -u postgres psql -tAc 'SHOW server_version;' 2>/dev/null || echo '?')"
 ok "PostgreSQL ${PG_VER} installed and running."
 
@@ -96,18 +96,18 @@ case "${REMOTE}" in
     if ${SUDO} grep -qF "${CIDR}" "${PG_HBA}"; then
       info "pg_hba already has a rule for ${CIDR}."
     else
-      echo "${HBA_LINE}" | ${SUDO} tee -a "${PG_HBA}" >/dev/null
+      echo "${HBA_LINE}" | run ${SUDO} tee -a "${PG_HBA}" >/dev/null
       ok "Appended pg_hba rule for ${CIDR}."
     fi
 
     if ${SUDO} grep -qE "^[#[:space:]]*listen_addresses" "${PG_CONF}"; then
-      ${SUDO} sed -i "s|^[#[:space:]]*listen_addresses.*|listen_addresses = '*'|" "${PG_CONF}"
+      run ${SUDO} sed -i "s|^[#[:space:]]*listen_addresses.*|listen_addresses = '*'|" "${PG_CONF}"
     else
-      echo "listen_addresses = '*'" | ${SUDO} tee -a "${PG_CONF}" >/dev/null
+      echo "listen_addresses = '*'" | run ${SUDO} tee -a "${PG_CONF}" >/dev/null
     fi
     ok "Set listen_addresses = '*'."
 
-    ${SUDO} systemctl restart postgresql && ok "PostgreSQL restarted."
+    run ${SUDO} systemctl restart postgresql && ok "PostgreSQL restarted."
 
     if command -v ufw >/dev/null 2>&1; then
       if [ "${CIDR}" = "0.0.0.0/0" ]; then ${SUDO} ufw allow 5432/tcp

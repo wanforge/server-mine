@@ -22,19 +22,9 @@ __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 if [ -r "${__d}/lib.sh" ]; then . "${__d}/lib.sh"
 else . <(curl -fsSL "${__LIB}"); fi
 
-# ---- dry-run ------------------------------------------------------------
-# Enable with: DRY_RUN=1 ... | bash   OR   ... | bash -s -- --dry-run
-DRY_RUN="${DRY_RUN:-0}"
-for __a in "$@"; do case "$__a" in --dry-run|-n) DRY_RUN=1 ;; esac; done
-
 # ---- helpers ------------------------------------------------------------
-ufw_run() {
-  if [ "${DRY_RUN}" = "1" ]; then
-    printf "    %b[dry-run]%b ufw %s\n" "${C_YELLOW}" "${C_RESET}" "$*" >&2
-    return 0
-  fi
-  ${SUDO} ufw "$@"
-}
+# DRY_RUN + run() come from lib.sh (global to all scripts).
+ufw_run() { run ${SUDO} ufw "$@"; }
 uw() { printf "\n%b▶ ufw %s%b\n" "${C_BOLD}${C_CYAN}" "$*" "${C_RESET}" >&2; if ufw_run "$@"; then ok "Done."; else err "ufw command failed."; fi; }
 valid_addr() { [[ "$1" =~ ^[0-9a-fA-F:.]+(/[0-9]{1,3})?$ ]]; }
 valid_proto() { case "$1" in tcp|udp|"") return 0;; *) return 1;; esac; }
@@ -115,10 +105,10 @@ banner
 if [ "${DRY_RUN}" != "1" ] && ! command -v ufw >/dev/null 2>&1; then
   c="$(ask "ufw not installed. Install it now? [Y/n]:" "y")"
   case "$c" in n|N|no) err "ufw required."; exit 1 ;; *)
-    if command -v apt-get >/dev/null 2>&1; then ${SUDO} apt-get update && ${SUDO} apt-get install -y ufw
-    elif command -v dnf >/dev/null 2>&1; then ${SUDO} dnf -y install ufw
-    elif command -v pacman >/dev/null 2>&1; then ${SUDO} pacman -S --noconfirm ufw
-    elif command -v apk >/dev/null 2>&1; then ${SUDO} apk add ufw
+    if command -v apt-get >/dev/null 2>&1; then run ${SUDO} apt-get update && run ${SUDO} apt-get install -y ufw
+    elif command -v dnf >/dev/null 2>&1; then run ${SUDO} dnf -y install ufw
+    elif command -v pacman >/dev/null 2>&1; then run ${SUDO} pacman -S --noconfirm ufw
+    elif command -v apk >/dev/null 2>&1; then run ${SUDO} apk add ufw
     else err "Install ufw manually."; exit 1; fi ;;
   esac
 fi

@@ -40,17 +40,17 @@ CIDR="$(ask "Allowed source CIDR (e.g. 10.0.0.0/8; '0.0.0.0/0'=anywhere, NOT rec
 PROCEED="$(ask "Set bind-address = 0.0.0.0 in ${CONF}? [y/N]:" "n")"
 case "${PROCEED}" in
   y|Y|yes)
-    ${SUDO} cp "${CONF}" "${CONF}.bak.$(date +%s 2>/dev/null || echo bak)" 2>/dev/null || true
+    run ${SUDO} cp "${CONF}" "${CONF}.bak.$(date +%s 2>/dev/null || echo bak)" 2>/dev/null || true
     if ${SUDO} grep -qE '^[[:space:]]*bind-address' "${CONF}"; then
-      ${SUDO} sed -i 's|^[[:space:]]*bind-address.*|bind-address = 0.0.0.0|' "${CONF}"
+      run ${SUDO} sed -i 's|^[[:space:]]*bind-address.*|bind-address = 0.0.0.0|' "${CONF}"
     else
-      printf '\n[mysqld]\nbind-address = 0.0.0.0\n' | ${SUDO} tee -a "${CONF}" >/dev/null
+      printf '\n[mysqld]\nbind-address = 0.0.0.0\n' | run ${SUDO} tee -a "${CONF}" >/dev/null
     fi
     ok "Set bind-address = 0.0.0.0."
 
     # restart whichever service exists
-    if ${SUDO} systemctl restart mysql 2>/dev/null; then ok "Restarted mysql."
-    elif ${SUDO} systemctl restart mariadb 2>/dev/null; then ok "Restarted mariadb."
+    if run ${SUDO} systemctl restart mysql 2>/dev/null; then ok "Restarted mysql."
+    elif run ${SUDO} systemctl restart mariadb 2>/dev/null; then ok "Restarted mariadb."
     else warn "Could not restart mysql/mariadb; restart manually."; fi
 
     if command -v ufw >/dev/null 2>&1; then

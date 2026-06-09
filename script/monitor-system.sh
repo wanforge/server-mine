@@ -22,10 +22,10 @@ else . <(curl -fsSL "${__LIB}"); fi
 pm_install() {
   local pm; for pm in apt-get dnf yum pacman zypper apk; do command -v "$pm" >/dev/null 2>&1 && break; done
   case "$pm" in
-    apt-get) ${SUDO} apt-get update && ${SUDO} apt-get install -y "$@" ;;
-    dnf) ${SUDO} dnf -y install "$@" ;; yum) ${SUDO} yum -y install "$@" ;;
-    pacman) ${SUDO} pacman -S --noconfirm --needed "$@" ;; zypper) ${SUDO} zypper --non-interactive install "$@" ;;
-    apk) ${SUDO} apk add "$@" ;; *) warn "No package manager found." ;;
+    apt-get) run ${SUDO} apt-get update && run ${SUDO} apt-get install -y "$@" ;;
+    dnf) run ${SUDO} dnf -y install "$@" ;; yum) run ${SUDO} yum -y install "$@" ;;
+    pacman) run ${SUDO} pacman -S --noconfirm --needed "$@" ;; zypper) run ${SUDO} zypper --non-interactive install "$@" ;;
+    apk) run ${SUDO} apk add "$@" ;; *) warn "No package manager found." ;;
   esac
 }
 

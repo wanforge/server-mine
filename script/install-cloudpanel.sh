@@ -33,10 +33,10 @@ fi
 # ---- step 1: prerequisites ----------------------------------------------
 step "Update system & install prerequisites"
 info "apt update && upgrade"
-${SUDO} apt-get update
-${SUDO} apt-get -y upgrade
+run ${SUDO} apt-get update
+run ${SUDO} apt-get -y upgrade
 info "Installing curl wget sudo"
-${SUDO} apt-get -y install curl wget sudo
+run ${SUDO} apt-get -y install curl wget sudo
 ok "Prerequisites ready."
 
 # ---- step 2: choose database engine -------------------------------------

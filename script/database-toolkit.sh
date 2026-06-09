@@ -107,7 +107,7 @@ pg_cache() {
 pg_optimize() {
   local db; db="$(ask "Database to VACUUM ANALYZE:" "postgres")"
   hd "VACUUM ANALYZE ${db}"
-  ${SUDO} -u postgres psql -d "${db}" -c "VACUUM (ANALYZE, VERBOSE);" >&2 || warn "vacuum failed"
+  run ${SUDO} -u postgres psql -d "${db}" -c "VACUUM (ANALYZE, VERBOSE);" >&2 || warn "vacuum failed"
   local rx; rx="$(ask "Also REINDEX database ${db}? [y/N]:" "n")"
   case "${rx}" in y|Y|yes) ${SUDO} -u postgres psql -d "${db}" -c "REINDEX DATABASE \"${db}\";" >&2 || warn "reindex failed" ;; esac
   ok "Done."

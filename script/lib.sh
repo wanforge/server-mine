@@ -41,6 +41,19 @@ for __a in "$@"; do case "$__a" in
 esac; done
 [ "${LOG_LEVEL}" -ge 3 ] && set -x
 
+# ---- dry-run ------------------------------------------------------------
+# DRY_RUN=1 (or --dry-run / -n) makes run() PRINT a command instead of
+# executing it. Wrap state-changing commands with `run`:  run ${SUDO} apt-get …
+DRY_RUN="${DRY_RUN:-0}"
+for __a in "$@"; do case "$__a" in --dry-run|-n) DRY_RUN=1 ;; esac; done
+run() {
+  if [ "${DRY_RUN}" = "1" ]; then
+    printf "    %b[dry-run]%b %s\n" "${C_YELLOW}" "${C_RESET}" "$*" >&2
+    return 0
+  fi
+  "$@"
+}
+
 # ---- banner (random single-hue gradient) --------------------------------
 banner() {
   [ "${LOG_LEVEL:-1}" -ge 1 ] || return 0
