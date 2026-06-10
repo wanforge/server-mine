@@ -1,18 +1,25 @@
-# wanforge.asia — Server Scripts
+# wanforge/scripts
 
-A collection of Linux server setup and hardening scripts. Run them individually,
-or use the interactive launcher `install.sh` which shows a grouped multi-select
-checkbox menu and runs the chosen scripts in order.
+Interactive Linux server automation toolkit — one launcher, 24 scripts across
+8 categories: system setup, security hardening, cloud panels, databases, app
+runtimes, monitoring & observability, CI/CD, and network & Proxmox tooling.
 
-This is a public repository, so no authentication is required to run the scripts.
+Run scripts individually or use `install.sh`, an interactive grouped checkbox
+launcher that fetches and runs the chosen scripts in order. No authentication
+required — public repo, served via GitHub Pages at `scripts.wanforge.asia`.
+
+Scripts are organized under `script/linux/<category>/`, structured so future
+macOS or Windows scripts can be added alongside without changing the layout.
 
 ## Requirements
 
-- A Linux system with one of these package managers: `apt`, `dnf`, `yum`,
-  `pacman`, `zypper`, or `apk`. Some scripts are Debian/Ubuntu only (noted below).
-- `curl` and `sudo` access (or run as root). Node.js and Composer install
-  user-local and do not use `sudo`.
-- An interactive terminal (scripts read input from `/dev/tty`).
+- **OS**: Linux (currently). Scripts live under `script/linux/`; macOS/Windows
+  variants would go in `script/macos/` / `script/windows/` when added.
+- **Package manager**: `apt`, `dnf`, `yum`, `pacman`, `zypper`, or `apk`.
+  Some scripts are Debian/Ubuntu only (noted in the table below).
+- **Tools**: `curl` and `sudo` (or root). Node.js, Composer, and PM2 install
+  user-local — no `sudo` needed for those.
+- **Terminal**: interactive TTY (scripts read input from `/dev/tty`).
 
 ### Install `curl` first (fresh systems)
 
@@ -185,12 +192,12 @@ arrow-key TUIs — `↑/↓` to move, `ENTER` to select, `Q` to go back.
 Each script can also be run directly without the launcher.
 
 ```bash
-# System & base
+# System
 curl -fsSL https://scripts.wanforge.asia/script/linux/system/install-packages.sh | bash
 curl -fsSL https://scripts.wanforge.asia/script/linux/system/set-timezone.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/system/install-firewall.sh | bash
 
 # Security
-curl -fsSL https://scripts.wanforge.asia/script/linux/system/install-firewall.sh | bash
 curl -fsSL https://scripts.wanforge.asia/script/linux/security/firewall-manager.sh | bash
 curl -fsSL https://scripts.wanforge.asia/script/linux/security/install-fail2ban.sh | bash
 curl -fsSL https://scripts.wanforge.asia/script/linux/security/secure-ssh.sh | bash
@@ -235,7 +242,7 @@ curl -fsSL https://scripts.wanforge.asia/script/linux/runtime/setup-pm2-app.sh |
 | —               | `install.sh`             | Grouped checkbox launcher that runs the other scripts             | —    | Any             |
 | System          | `install-packages.sh`    | Update/upgrade system, install base essentials (micro/curl/wget/git) | Yes | Multi        |
 | System          | `set-timezone.sh`        | Set timezone via `timedatectl` (default `Asia/Jakarta`)           | Yes  | Any (systemd)   |
-| Security        | `install-firewall.sh`    | Install `ufw`, open SSH/http/https, add custom ports, enable      | Yes  | Mainly Deb/Ubu  |
+| System          | `install-firewall.sh`    | Install `ufw`, open SSH/http/https, add custom ports, enable      | Yes  | Mainly Deb/Ubu  |
 | Security        | `firewall-manager.sh`    | Full ufw manager: allow/deny IP & port, multi-IP, rate-limit      | Yes  | Any (ufw)       |
 | Security        | `install-fail2ban.sh`    | Install and enable the Fail2Ban service                           | Yes  | Multi           |
 | Security        | `secure-ssh.sh`          | Change SSH port, disable root/password login, enable pubkey       | Yes  | Any (OpenSSH)   |
