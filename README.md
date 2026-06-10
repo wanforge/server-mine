@@ -101,6 +101,8 @@ Select scripts to run:  ↑/↓ move · SPACE toggle · A all · ENTER run · Q 
   [ ] net-tools            Local/public IP, ports, speedtest, ping, dig, scan
 ── Proxmox ──
   [ ] proxmox-toolkit      PVE: node/VM/CT resources, storage, realtime dashboard
+── CI/CD ──
+  [ ] install-github-runner GitHub Actions self-hosted runner (avoid billed minutes)
 ── Observability ──
   [ ] install-prometheus   Prometheus + node_exporter (+ Alertmanager)
   [ ] install-grafana      Grafana + Prometheus data source
@@ -211,6 +213,9 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/ne
 # Proxmox (run on a PVE node)
 curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/proxmox-toolkit.sh | bash
 
+# CI/CD
+curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-github-runner.sh | bash
+
 # Observability stack
 curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-prometheus.sh | bash
 curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-grafana.sh | bash
@@ -248,6 +253,7 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/se
 | Monitoring      | `monitor-system.sh`      | CPU/RAM/storage/processes/network — snapshot or realtime watch    | Some | Any             |
 | Network         | `net-tools.sh`           | Local/public IP, ports, speedtest, ping/traceroute/dig/whois/scan | Some | Any             |
 | Proxmox         | `proxmox-toolkit.sh`     | PVE node/VM/CT resources, storage, cluster, realtime dashboard    | Yes  | Proxmox VE      |
+| CI/CD           | `install-github-runner.sh` | GitHub Actions self-hosted runner as a systemd service (avoid billed minutes) | Yes  | Linux           |
 | Observability   | `install-prometheus.sh`  | Prometheus + node_exporter + optional Alertmanager, scrape config | Yes  | Debian/Ubuntu   |
 | Observability   | `install-grafana.sh`     | Grafana (official repo) + auto Prometheus data source             | Yes  | Debian/Ubuntu   |
 | Observability   | `install-zabbix.sh`      | Zabbix agent or full server (frontend + MySQL schema)             | Yes  | Debian/Ubuntu   |
@@ -444,6 +450,51 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/se
     Proxmox storage, and running-vs-total VMs/containers.
 - Mutating actions (start/stop/backup) honor `DRY_RUN`.
 
+### install-github-runner.sh
+
+A single-select TUI **manager** for [GitHub Actions self-hosted runners](https://docs.github.com/actions/hosting-your-own-runners).
+Jobs with `runs-on: self-hosted` execute on **your** machine, so GitHub-hosted
+runner minutes are not consumed — self-hosted runners are
+[free of per-minute billing](https://docs.github.com/billing/managing-billing-for-github-actions/about-billing-for-github-actions).
+
+Menu actions:
+
+| Action                     | What it does                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| **Install**                | Register a new runner and install it as a systemd service                       |
+| **List**                   | Show every runner on this host (name, service state, user, target URL, dir)     |
+| **Status**                 | `systemctl status` of a chosen runner service                                   |
+| **Logs**                   | `journalctl -u <svc>` (last 100 lines) for a chosen runner                      |
+| **Start / Stop / Restart** | Control a chosen runner service via `svc.sh`                                    |
+| **Remove**                 | Stop + uninstall the service, unregister from GitHub, optionally delete the dir |
+
+- **Scope**: a single **repo** (`owner/name`) or a whole **org**. Fetches the
+  latest [`actions/runner`](https://github.com/actions/runner/releases) release
+  for your arch (`x64` / `arm64` / `arm`), or prompts for a version if the
+  GitHub API is unreachable.
+- **Tokens** (both short-lived — copy them just before running):
+  - *Registration token* (Install) — **Settings → Actions → Runners → New runner**.
+  - *Removal token* (Remove) — the runner's **⋯ → Remove** dialog.
+- **Service user**: creates a dedicated `--system` user (default `github-runner`);
+  [GitHub forbids running the service as root](https://docs.github.com/actions/hosting-your-own-runners/managing-self-hosted-runners/configuring-the-self-hosted-runner-application-as-a-service).
+  Override the user at the prompt.
+- **Install layout**: each runner lives in `${RUNNER_ROOT}/<name>` (default
+  `RUNNER_ROOT=/opt/actions-runner`), so multiple runners coexist. Install runs
+  `bin/installdependencies.sh` (libicu etc.), `config.sh --unattended --replace`
+  (with optional `--ephemeral`, `--labels`, `--runnergroup`, `--work`), then
+  `svc.sh install <user>` + `svc.sh start`.
+- **Use in a workflow**:
+
+  ```yaml
+  jobs:
+    build:
+      runs-on: [self-hosted, linux, x64]   # or a custom label you set at install
+  ```
+
+- **Security**: see
+  [hardening for self-hosted runners](https://docs.github.com/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners)
+  — avoid self-hosted runners on **public** repos (untrusted forks can run code).
+
 ### install-prometheus.sh
 
 - Debian/Ubuntu. Checkbox components: Prometheus (`:9090`), node_exporter
@@ -537,7 +588,6 @@ flowchart TD
   the proxy (e.g. CloudPanel) in front of Cockpit.
 - **Node.js / Composer**: installed in the current user's home, no `sudo`. PM2
   boot startup (`pm2 startup`) is optional and needs `sudo` for systemd.
-- **Disable colors**: set `NO_COLOR=1` before running.
 
 ## Shared library
 
