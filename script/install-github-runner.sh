@@ -15,7 +15,7 @@
 #   Remove       unregister a runner from GitHub + uninstall its service
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-github-runner.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/wanforge/scripts/main/script/install-github-runner.sh | bash
 #
 # Tokens (Settings → Actions → Runners):
 #   "New runner" shows a short-lived REGISTRATION token (used by Install).
@@ -39,7 +39,7 @@ set -euo pipefail
 TASK="install-github-runner"
 
 # --- shared library: banner, colors, logging, prompts, menus -------------
-__LIB="https://raw.githubusercontent.com/wanforge/server-mine/main/script/lib.sh"
+__LIB="https://scripts.wanforge.asia/script/lib.sh"
 __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 if [ -r "${__d}/lib.sh" ]; then . "${__d}/lib.sh"
 else if command -v curl >/dev/null 2>&1; then . <(curl -fsSL "${__LIB}"); else . <(wget -qO- "${__LIB}"); fi; fi
@@ -118,7 +118,7 @@ a_install() {
   SCOPE="$(ask "Scope — [r]epo or [o]rg? [r/o]:" "r")"
   case "${SCOPE}" in o|O|org) SCOPE="org" ;; *) SCOPE="repo" ;; esac
   if [ "${SCOPE}" = "repo" ]; then
-    GH_PATH="$(ask "Repo (owner/name), e.g. wanforge/server-mine:" "")"
+    GH_PATH="$(ask "Repo (owner/name), e.g. wanforge/scripts:" "")"
   else
     GH_PATH="$(ask "Org name, e.g. wanforge:" "")"
   fi

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2086,SC2034
 #
-# lib.sh — shared UI for wanforge/server-mine scripts: colors, the WANFORGE
+# lib.sh — shared UI for wanforge/scripts scripts: colors, the WANFORGE
 # banner, logging helpers, interactive prompts, and a grouped checkbox menu.
 # Sourced by every script so the look & feel is defined in one place.
 #

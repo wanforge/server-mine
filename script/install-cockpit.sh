@@ -6,7 +6,7 @@
 # Each action is selectable/skippable. Debian/Ubuntu only.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-cockpit.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/wanforge/scripts/main/script/install-cockpit.sh | bash
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (c) 2026 Sugeng Sulistiyawan
@@ -15,7 +15,7 @@ set -euo pipefail
 TASK="install-cockpit"
 
 # --- shared library: banner, colors, logging, prompts, checkbox ----------
-__LIB="https://raw.githubusercontent.com/wanforge/server-mine/main/script/lib.sh"
+__LIB="https://scripts.wanforge.asia/script/lib.sh"
 __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 if [ -r "${__d}/lib.sh" ]; then . "${__d}/lib.sh"
 else if command -v curl >/dev/null 2>&1; then . <(curl -fsSL "${__LIB}"); else . <(wget -qO- "${__LIB}"); fi; fi

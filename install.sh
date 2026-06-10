@@ -3,7 +3,7 @@
 # install.sh — interactive launcher for wanforge server scripts.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/wanforge/scripts/main/install.sh | bash
 #
 # Shows a grouped checkbox menu, then fetches and runs the chosen scripts
 # from this public repo (no authentication needed).
@@ -14,7 +14,7 @@
 set -euo pipefail
 
 # --- shared library: colors, banner, logging, prompts --------------------
-__LIB="https://raw.githubusercontent.com/wanforge/server-mine/main/script/lib.sh"
+__LIB="https://scripts.wanforge.asia/script/lib.sh"
 __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 if [ -r "${__d}/script/lib.sh" ]; then . "${__d}/script/lib.sh"
 else if command -v curl >/dev/null 2>&1; then . <(curl -fsSL "${__LIB}"); else . <(wget -qO- "${__LIB}"); fi; fi
@@ -34,7 +34,7 @@ spinner() {
 
 # --- config: source repo -------------------------------------------------
 REPO_OWNER="wanforge"
-REPO_NAME="server-mine"
+REPO_NAME="scripts"
 REPO_BRANCH="main"
 
 # Script registry — "group|label|path-in-repo|description". Keep groups contiguous.
@@ -147,7 +147,7 @@ while true; do
   printf "\n%bRunning %d script(s).%b\n\n" "${C_GREEN}" "${#SELECTED[@]}" "${C_RESET}" >&2
   for sel in "${SELECTED[@]}"; do
     IFS='|' read -r _ SEL_LABEL SCRIPT_PATH _ <<< "${SCRIPTS[$sel]}"
-    RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/${SCRIPT_PATH}"
+    RAW_URL="https://scripts.wanforge.asia/${SCRIPT_PATH}"
 
     dlo "${RAW_URL}" "${TMP_SCRIPT}" &
     spinner $! "Fetching ${SEL_LABEL}"

@@ -42,13 +42,13 @@ below.
 ## Run via the Launcher
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/install.sh | bash
+curl -fsSL https://scripts.wanforge.asia/install.sh | bash
 ```
 
 No `curl`? Use `wget` instead (present on many minimal images):
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/wanforge/server-mine/main/install.sh | bash
+wget -qO- https://scripts.wanforge.asia/install.sh | bash
 ```
 
 Menu controls:
@@ -124,7 +124,7 @@ a flag:
 
 ```bash
 # silent (good for automation / cron)
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/install.sh | MODE=silent bash
+curl -fsSL https://scripts.wanforge.asia/install.sh | MODE=silent bash
 
 # verbose
 curl -fsSL .../script/monitor-system.sh | VERBOSE=1 bash
@@ -186,46 +186,46 @@ Each script can also be run directly without the launcher.
 
 ```bash
 # System & base
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-packages.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/set-timezone.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-packages.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/set-timezone.sh | bash
 
 # Security
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-firewall.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/firewall-manager.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-fail2ban.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/secure-ssh.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/generate-ssh-key.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-firewall.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/firewall-manager.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-fail2ban.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/secure-ssh.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/generate-ssh-key.sh | bash
 
 # Panels & consoles
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-cloudpanel.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/clpctl-manager.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-cockpit.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-cloudpanel.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/clpctl-manager.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-cockpit.sh | bash
 
 # Databases
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-postgresql.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/enable-mysql-remote.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/database-toolkit.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-postgresql.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/enable-mysql-remote.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/database-toolkit.sh | bash
 
 # Monitoring & network
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/monitor-system.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/net-tools.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/monitor-system.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/net-tools.sh | bash
 
 # Proxmox (run on a PVE node)
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/proxmox-toolkit.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/proxmox-toolkit.sh | bash
 
 # CI/CD
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-github-runner.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-github-runner.sh | bash
 
 # Observability stack
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-prometheus.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-grafana.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-zabbix.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-prometheus.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-grafana.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-zabbix.sh | bash
 
 # App runtime
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-nodejs.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-python.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/install-composer.sh | bash
-curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/setup-pm2-app.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-nodejs.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-python.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/install-composer.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/setup-pm2-app.sh | bash
 ```
 
 ## Scripts Overview
@@ -305,7 +305,7 @@ curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/se
   safe to try the menus and inputs first:
 
   ```bash
-  curl -fsSL https://raw.githubusercontent.com/wanforge/server-mine/main/script/firewall-manager.sh | DRY_RUN=1 bash
+  curl -fsSL https://scripts.wanforge.asia/script/firewall-manager.sh | DRY_RUN=1 bash
   ```
 
 ### install-fail2ban.sh
@@ -597,7 +597,7 @@ The banner, colors, logging helpers (`info`/`ok`/`warn`/`err`/`hd`), prompts
 
 ```bash
 TASK="my-script"
-__LIB="https://raw.githubusercontent.com/wanforge/server-mine/main/script/lib.sh"
+__LIB="https://scripts.wanforge.asia/script/lib.sh"
 __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 if [ -r "${__d}/lib.sh" ]; then . "${__d}/lib.sh"
 else . <(curl -fsSL "${__LIB}"); fi
