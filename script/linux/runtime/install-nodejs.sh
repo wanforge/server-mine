@@ -5,7 +5,7 @@
 # choose the version, then optionally install PM2 + pm2-logrotate.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/wanforge/scripts/main/script/install-nodejs.sh | bash
+#   curl -fsSL https://scripts.wanforge.asia/script/linux/runtime/install-nodejs.sh | bash
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (c) 2026 Sugeng Sulistiyawan
@@ -14,13 +14,13 @@ set -euo pipefail
 TASK="install-nodejs"
 
 # --- shared library: banner, colors, logging, prompts, checkbox ----------
-__LIB="https://scripts.wanforge.asia/script/lib.sh"
+__LIB="https://scripts.wanforge.asia/script/linux/lib.sh"
 __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
-if [ -r "${__d}/lib.sh" ]; then . "${__d}/lib.sh"
+if [ -r "${__d}/../lib.sh" ]; then . "${__d}/../lib.sh"
 else if command -v curl >/dev/null 2>&1; then . <(curl -fsSL "${__LIB}"); else . <(wget -qO- "${__LIB}"); fi; fi
 
 # run as a target user (e.g. a CloudPanel site user) when invoked as root
-maybe_switch_user "https://raw.githubusercontent.com/wanforge/scripts/main/script/install-nodejs.sh"
+maybe_switch_user "https://scripts.wanforge.asia/script/linux/runtime/install-nodejs.sh"
 NVM_VERSION="v0.40.1"   # pinned nvm release; bump as needed
 
 # ---- run ----------------------------------------------------------------

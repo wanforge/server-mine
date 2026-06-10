@@ -32,3 +32,8 @@ local.*
 Thumbs.db
 *.swp
 *~
+
+# Logs / temp
+*.log
+tmp/
+.cache/

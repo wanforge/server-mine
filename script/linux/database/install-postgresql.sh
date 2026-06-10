@@ -5,7 +5,7 @@
 # no hardcoded secrets), optionally enable remote access.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/wanforge/scripts/main/script/install-postgresql.sh | bash
+#   curl -fsSL https://scripts.wanforge.asia/script/linux/database/install-postgresql.sh | bash
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (c) 2026 Sugeng Sulistiyawan
@@ -14,9 +14,9 @@ set -euo pipefail
 TASK="install-postgresql"
 
 # --- shared library: banner, colors, logging, prompts, checkbox ----------
-__LIB="https://scripts.wanforge.asia/script/lib.sh"
+__LIB="https://scripts.wanforge.asia/script/linux/lib.sh"
 __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
-if [ -r "${__d}/lib.sh" ]; then . "${__d}/lib.sh"
+if [ -r "${__d}/../lib.sh" ]; then . "${__d}/../lib.sh"
 else if command -v curl >/dev/null 2>&1; then . <(curl -fsSL "${__LIB}"); else . <(wget -qO- "${__LIB}"); fi; fi
 
 psql_super() { ${SUDO} -u postgres psql -v ON_ERROR_STOP=1 "$@"; }

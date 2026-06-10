@@ -3,7 +3,7 @@
 # install.sh — interactive launcher for wanforge server scripts.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/wanforge/scripts/main/install.sh | bash
+#   curl -fsSL https://scripts.wanforge.asia/install.sh | bash
 #
 # Shows a grouped checkbox menu, then fetches and runs the chosen scripts
 # from this public repo (no authentication needed).
@@ -14,9 +14,9 @@
 set -euo pipefail
 
 # --- shared library: colors, banner, logging, prompts --------------------
-__LIB="https://scripts.wanforge.asia/script/lib.sh"
+__LIB="https://scripts.wanforge.asia/script/linux/lib.sh"
 __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
-if [ -r "${__d}/script/lib.sh" ]; then . "${__d}/script/lib.sh"
+if [ -r "${__d}/script/linux/lib.sh" ]; then . "${__d}/script/linux/lib.sh"
 else if command -v curl >/dev/null 2>&1; then . <(curl -fsSL "${__LIB}"); else . <(wget -qO- "${__LIB}"); fi; fi
 
 spinner() {
@@ -39,30 +39,30 @@ REPO_BRANCH="main"
 
 # Script registry — "group|label|path-in-repo|description". Keep groups contiguous.
 SCRIPTS=(
-  "System|install-packages|script/install-packages.sh|Update system + install base essentials (micro, curl, wget, git)"
-  "System|set-timezone|script/set-timezone.sh|Set timezone (UTC recommended for servers)"
-  "Security|install-firewall|script/install-firewall.sh|Install & configure ufw firewall"
-  "Security|firewall-manager|script/firewall-manager.sh|Full ufw manager: allow/deny IP/port, multiple, rate-limit"
-  "Security|install-fail2ban|script/install-fail2ban.sh|Install & enable Fail2Ban"
-  "Security|secure-ssh|script/secure-ssh.sh|Harden SSH: change port, disable root/password, pubkey"
-  "Security|generate-ssh-key|script/generate-ssh-key.sh|Generate an ed25519 SSH key (user-local)"
-  "Panel & Console|install-cloudpanel|script/install-cloudpanel.sh|Install CloudPanel CE v2 (Debian/Ubuntu only)"
-  "Panel & Console|clpctl-manager|script/clpctl-manager.sh|Manage CloudPanel via clpctl (sites, db, users, certs)"
-  "Panel & Console|install-cockpit|script/install-cockpit.sh|Install Cockpit web console + modules (Debian/Ubuntu)"
-  "Database|install-postgresql|script/install-postgresql.sh|Install PostgreSQL + create roles + remote access"
-  "Database|enable-mysql-remote|script/enable-mysql-remote.sh|Allow remote MySQL/MariaDB access (sensitive)"
-  "Database|database-toolkit|script/database-toolkit.sh|Monitor, optimize, config, datetime (MySQL/PostgreSQL)"
-  "App Runtime|install-nodejs|script/install-nodejs.sh|Install Node.js via nvm (user-local) + PM2"
-  "App Runtime|install-python|script/install-python.sh|Install Python 3 + pip, venv, dev, pipx (multi-distro)"
-  "App Runtime|install-composer|script/install-composer.sh|Install Composer (user-local, signature-verified)"
-  "App Runtime|setup-pm2-app|script/setup-pm2-app.sh|Configure pm2-logrotate + register an app (ecosystem)"
-  "Monitoring|monitor-system|script/monitor-system.sh|CPU, RAM, storage, processes, network (snapshot or realtime)"
-  "Network|net-tools|script/net-tools.sh|Local/public IP, ports, speedtest, ping, dig, scan"
-  "Proxmox|proxmox-toolkit|script/proxmox-toolkit.sh|PVE: node/VM/CT resources, storage, realtime dashboard"
-  "CI/CD|install-github-runner|script/install-github-runner.sh|Manage GitHub Actions self-hosted runners: install/list/status/logs/remove (avoid billed minutes)"
-  "Observability|install-prometheus|script/install-prometheus.sh|Prometheus + node_exporter (+ Alertmanager)"
-  "Observability|install-grafana|script/install-grafana.sh|Grafana + Prometheus data source"
-  "Observability|install-zabbix|script/install-zabbix.sh|Zabbix agent or server (official repo)"
+  "System|install-packages|script/linux/system/install-packages.sh|Update system + install base essentials (micro, curl, wget, git)"
+  "System|set-timezone|script/linux/system/set-timezone.sh|Set timezone (UTC recommended for servers)"
+  "Security|install-firewall|script/linux/system/install-firewall.sh|Install & configure ufw firewall"
+  "Security|firewall-manager|script/linux/security/firewall-manager.sh|Full ufw manager: allow/deny IP/port, multiple, rate-limit"
+  "Security|install-fail2ban|script/linux/security/install-fail2ban.sh|Install & enable Fail2Ban"
+  "Security|secure-ssh|script/linux/security/secure-ssh.sh|Harden SSH: change port, disable root/password, pubkey"
+  "Security|generate-ssh-key|script/linux/security/generate-ssh-key.sh|Generate an ed25519 SSH key (user-local)"
+  "Panel & Console|install-cloudpanel|script/linux/cloud/install-cloudpanel.sh|Install CloudPanel CE v2 (Debian/Ubuntu only)"
+  "Panel & Console|clpctl-manager|script/linux/cloud/clpctl-manager.sh|Manage CloudPanel via clpctl (sites, db, users, certs)"
+  "Panel & Console|install-cockpit|script/linux/cloud/install-cockpit.sh|Install Cockpit web console + modules (Debian/Ubuntu)"
+  "Database|install-postgresql|script/linux/database/install-postgresql.sh|Install PostgreSQL + create roles + remote access"
+  "Database|enable-mysql-remote|script/linux/database/enable-mysql-remote.sh|Allow remote MySQL/MariaDB access (sensitive)"
+  "Database|database-toolkit|script/linux/database/database-toolkit.sh|Monitor, optimize, config, datetime (MySQL/PostgreSQL)"
+  "App Runtime|install-nodejs|script/linux/runtime/install-nodejs.sh|Install Node.js via nvm (user-local) + PM2"
+  "App Runtime|install-python|script/linux/runtime/install-python.sh|Install Python 3 + pip, venv, dev, pipx (multi-distro)"
+  "App Runtime|install-composer|script/linux/runtime/install-composer.sh|Install Composer (user-local, signature-verified)"
+  "App Runtime|setup-pm2-app|script/linux/runtime/setup-pm2-app.sh|Configure pm2-logrotate + register an app (ecosystem)"
+  "Monitoring|monitor-system|script/linux/monitoring/monitor-system.sh|CPU, RAM, storage, processes, network (snapshot or realtime)"
+  "Network|net-tools|script/linux/network/net-tools.sh|Local/public IP, ports, speedtest, ping, dig, scan"
+  "Proxmox|proxmox-toolkit|script/linux/network/proxmox-toolkit.sh|PVE: node/VM/CT resources, storage, realtime dashboard"
+  "CI/CD|install-github-runner|script/linux/cicd/install-github-runner.sh|Manage GitHub Actions self-hosted runners: install/list/status/logs/remove (avoid billed minutes)"
+  "Observability|install-prometheus|script/linux/monitoring/install-prometheus.sh|Prometheus + node_exporter (+ Alertmanager)"
+  "Observability|install-grafana|script/linux/monitoring/install-grafana.sh|Grafana + Prometheus data source"
+  "Observability|install-zabbix|script/linux/monitoring/install-zabbix.sh|Zabbix agent or server (official repo)"
 )
 # ------------------------------------------------------------------------
 

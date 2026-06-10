@@ -127,7 +127,7 @@ a flag:
 curl -fsSL https://scripts.wanforge.asia/install.sh | MODE=silent bash
 
 # verbose
-curl -fsSL .../script/monitor-system.sh | VERBOSE=1 bash
+curl -fsSL .../script/linux/monitoring/monitor-system.sh | VERBOSE=1 bash
 ```
 
 ### Dry-run (all scripts)
@@ -137,7 +137,7 @@ state-changing commands instead of running them — defined once in `lib.sh`, so
 it works the same everywhere:
 
 ```bash
-curl -fsSL .../script/install-fail2ban.sh | DRY_RUN=1 bash
+curl -fsSL .../script/linux/security/install-fail2ban.sh | DRY_RUN=1 bash
 # →  [dry-run] sudo apt-get install -y fail2ban
 #    [dry-run] sudo systemctl start fail2ban
 ```
@@ -158,7 +158,7 @@ PM2) and MySQL client mutations execute as normal.
 
 ```bash
 # fully unattended, dry-run, logged
-curl -fsSL .../script/install-fail2ban.sh | ASSUME_YES=1 DRY_RUN=1 LOG_FILE=/var/log/wf.log bash
+curl -fsSL .../script/linux/security/install-fail2ban.sh | ASSUME_YES=1 DRY_RUN=1 LOG_FILE=/var/log/wf.log bash
 ```
 
 Note: `ASSUME_YES` only fills prompts that have a safe default; password prompts
@@ -174,7 +174,7 @@ user's home. Perfect for CloudPanel site users:
 
 ```bash
 # install Node + PM2 into the CloudPanel site user 'john'
-curl -fsSL .../script/install-nodejs.sh | TARGET_USER=john bash
+curl -fsSL .../script/linux/runtime/install-nodejs.sh | TARGET_USER=john bash
 ```
 
 All menus (launcher and the `clpctl` / database / firewall managers) are
@@ -186,46 +186,46 @@ Each script can also be run directly without the launcher.
 
 ```bash
 # System & base
-curl -fsSL https://scripts.wanforge.asia/script/install-packages.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/set-timezone.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/system/install-packages.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/system/set-timezone.sh | bash
 
 # Security
-curl -fsSL https://scripts.wanforge.asia/script/install-firewall.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/firewall-manager.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/install-fail2ban.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/secure-ssh.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/generate-ssh-key.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/system/install-firewall.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/security/firewall-manager.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/security/install-fail2ban.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/security/secure-ssh.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/security/generate-ssh-key.sh | bash
 
 # Panels & consoles
-curl -fsSL https://scripts.wanforge.asia/script/install-cloudpanel.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/clpctl-manager.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/install-cockpit.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/cloud/install-cloudpanel.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/cloud/clpctl-manager.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/cloud/install-cockpit.sh | bash
 
 # Databases
-curl -fsSL https://scripts.wanforge.asia/script/install-postgresql.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/enable-mysql-remote.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/database-toolkit.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/database/install-postgresql.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/database/enable-mysql-remote.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/database/database-toolkit.sh | bash
 
 # Monitoring & network
-curl -fsSL https://scripts.wanforge.asia/script/monitor-system.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/net-tools.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/monitoring/monitor-system.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/network/net-tools.sh | bash
 
 # Proxmox (run on a PVE node)
-curl -fsSL https://scripts.wanforge.asia/script/proxmox-toolkit.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/network/proxmox-toolkit.sh | bash
 
 # CI/CD
-curl -fsSL https://scripts.wanforge.asia/script/install-github-runner.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/cicd/install-github-runner.sh | bash
 
 # Observability stack
-curl -fsSL https://scripts.wanforge.asia/script/install-prometheus.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/install-grafana.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/install-zabbix.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/monitoring/install-prometheus.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/monitoring/install-grafana.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/monitoring/install-zabbix.sh | bash
 
 # App runtime
-curl -fsSL https://scripts.wanforge.asia/script/install-nodejs.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/install-python.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/install-composer.sh | bash
-curl -fsSL https://scripts.wanforge.asia/script/setup-pm2-app.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/runtime/install-nodejs.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/runtime/install-python.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/runtime/install-composer.sh | bash
+curl -fsSL https://scripts.wanforge.asia/script/linux/runtime/setup-pm2-app.sh | bash
 ```
 
 ## Scripts Overview
@@ -305,7 +305,7 @@ curl -fsSL https://scripts.wanforge.asia/script/setup-pm2-app.sh | bash
   safe to try the menus and inputs first:
 
   ```bash
-  curl -fsSL https://scripts.wanforge.asia/script/firewall-manager.sh | DRY_RUN=1 bash
+  curl -fsSL https://scripts.wanforge.asia/script/linux/security/firewall-manager.sh | DRY_RUN=1 bash
   ```
 
 ### install-fail2ban.sh
@@ -418,7 +418,7 @@ curl -fsSL https://scripts.wanforge.asia/script/setup-pm2-app.sh | bash
   full-screen clear), so the values refresh without flicker or a "page reload".
 
   ```bash
-  curl -fsSL .../script/monitor-system.sh | WATCH=1 INTERVAL=2 bash
+  curl -fsSL .../script/linux/monitoring/monitor-system.sh | WATCH=1 INTERVAL=2 bash
   ```
 
 - Optional **Tools** section installs `htop`, `btop`, `ncdu`, `glances`, `iotop`
@@ -522,15 +522,15 @@ Menu actions:
 
 ```bash
 # 1) On each host you want to monitor: metrics exporter
-curl -fsSL .../script/install-prometheus.sh | bash      # pick node_exporter (+ Prometheus on the main host)
+curl -fsSL .../script/linux/monitoring/install-prometheus.sh | bash      # pick node_exporter (+ Prometheus on the main host)
 
 # 2) On the monitoring host: Grafana + Prometheus data source
-curl -fsSL .../script/install-grafana.sh | bash         # auto-add http://localhost:9090
+curl -fsSL .../script/linux/monitoring/install-grafana.sh | bash         # auto-add http://localhost:9090
 
 # 3) In Grafana (http://host:3000) → Dashboards → Import → 1860 → done.
 
 # Alternative all-in-one platform:
-curl -fsSL .../script/install-zabbix.sh | bash          # server on the main host, agent on the rest
+curl -fsSL .../script/linux/monitoring/install-zabbix.sh | bash          # server on the main host, agent on the rest
 ```
 
 ### install-nodejs.sh
@@ -593,20 +593,20 @@ flowchart TD
 
 The banner, colors, logging helpers (`info`/`ok`/`warn`/`err`/`hd`), prompts
 (`ask`/`asks`), and the grouped `checkbox` menu live once in
-[`script/lib.sh`](script/lib.sh). Every script sources it:
+[`script/linux/lib.sh`](script/linux/lib.sh). Every script sources it:
 
 ```bash
 TASK="my-script"
-__LIB="https://scripts.wanforge.asia/script/lib.sh"
+__LIB="https://scripts.wanforge.asia/script/linux/lib.sh"
 __d="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
-if [ -r "${__d}/lib.sh" ]; then . "${__d}/lib.sh"
+if [ -r "${__d}/../lib.sh" ]; then . "${__d}/../lib.sh"
 else . <(curl -fsSL "${__LIB}"); fi
 ```
 
-It uses the local sibling `lib.sh` when present (cloned repo), otherwise fetches
-it from the same public repo over HTTPS. Set `TASK` before sourcing — the banner
-subtitle uses it. To add a script, copy this header, fill in `TASK`, write your
-logic with the shared helpers, and register it in `install.sh`.
+It looks for `lib.sh` one directory up (cloned repo layout: `script/linux/<category>/`),
+otherwise fetches it from the public repo over HTTPS. Set `TASK` before sourcing — the
+banner subtitle uses it. To add a script, copy this header, fill in `TASK`, place the
+file under `script/linux/<os>/<category>/`, and register it in `install.sh`.
 
 ## License
 
